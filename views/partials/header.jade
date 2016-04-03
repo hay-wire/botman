@@ -17,7 +17,9 @@
           a(href='/api') API Examples
         li(class=(title == 'Contact') ? 'active' : undefined)
           a(href='/contact') Contact
-      ul.nav.navbar-nav.navbar-right
+        li(class=(title == 'Loki | The Facebook Bot') ? 'active' : undefined)
+          a(href='/bot/fb') Loki FB Bot
+    ul.nav.navbar-nav.navbar-right
         if !user
           li(class=(title == 'Login') ? 'active' : undefined)
             a(href='/login') Login
