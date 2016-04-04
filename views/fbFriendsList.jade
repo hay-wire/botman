@@ -1,0 +1,51 @@
+extends layout
+
+block content
+  .page-header
+    h3 FB Bot
+
+  form.form-horizontal(method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group
+      label(class='col-sm-2 control-label', for='fbusername') Currently using UserName
+      .col-sm-8
+        input.form-control(type='text', value='#{fbUserName}', name='fbusername', id='fbusername', required=true, disabled=true)
+    .form-group
+      label(class='col-sm-2 control-label', for='fbmsg') Message
+      .col-sm-8
+        textarea.form-control(name='fbmsg', id='fbmsg', rows='7', required=true)
+
+    .form-group
+      .col-sm-offset-2.col-sm-8
+        button.btn.btn-primary(type='submit')
+          i.fa.fa-envelope
+          | Send
+
+    hr
+    div.select-friends-button
+      button.btn.btn-primary(type='button')
+        i.fa.fa-toggle-on
+        | Invert Selection
+      button.btn.btn-danger(type='button')
+        i.fa.fa-user-times
+        | Un-Select All
+      button.btn.btn-success(type='button')
+        i.fa.fa-user-plus
+        | Select All
+
+    // select all button
+    // unselect all button
+    // invert selection button
+
+    .row
+      for friend in friendsList
+        .col-sm-3
+          label.frnd(for='chk-#{friend.userID}')
+            div(id=friend.userID)
+              a(href=friend.profileUrl, target='_blank')
+                img(src='#{friend.profilePicture}')
+              div.details
+                a(href=friend.profileUrl, target='_blank') #{friend.fullName}
+                input.friend-select-checkbox(type='checkbox' id='chk-#{friend.userID}' name='checkedfriend[]')
+                //Send Message
+                input(type='hidden' name='friend[]' value='#{friend.userID}')

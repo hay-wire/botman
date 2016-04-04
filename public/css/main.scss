@@ -73,3 +73,54 @@ textarea {
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {
   float: left;
 }
+
+//=========== Botman
+
+.frnd {
+  padding: 10px;
+  border: 1px solid #D6D6D6;
+  margin: 3px;
+  min-width: 100%;
+  cursor: pointer;
+}
+.frnd:hover {
+  box-shadow: 2px 4px 19px gray;
+}
+
+.frnd .details {
+  display: inline-block;
+  padding: 0 12px;
+  vertical-align: top;
+}
+
+.frnd img {
+  height: 48px;
+  vertical-align: middle;
+}
+
+.details > input[type="checkbox"] {
+  float: right;
+}
+
+.details a {
+  display: block;
+  color: #5A5A5A;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+:checked +  .frnd {
+  box-shadow: 0px 0px 5px #569845;
+}
+
+.select-friends-button {
+  width: 100%;
+  min-height: 50px;
+  margin: 0 10px;
+}
+
+.select-friends-button .btn {
+  float: right;
+  //margin-left: 10px;
+  margin-right: 10px;
+}
