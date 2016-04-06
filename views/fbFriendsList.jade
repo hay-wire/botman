@@ -5,7 +5,7 @@ block content
     h3 FB Bot
 
   form.form-horizontal(method='POST')
-    input(type='hidden', name='_csrf', value=_csrf)
+    input#_csrf(type='hidden', name='_csrf', value=_csrf)
     .form-group
       label(class='col-sm-2 control-label', for='fbusername') Currently using UserName
       .col-sm-8
@@ -17,7 +17,7 @@ block content
 
     .form-group
       .col-sm-offset-2.col-sm-8
-        button.btn.btn-primary(type='submit')
+        button#sendMsg.btn.btn-primary(type='button')
           i.fa.fa-envelope
           | Send
 
@@ -46,6 +46,6 @@ block content
                 img(src='#{friend.profilePicture}')
               div.details
                 a(href=friend.profileUrl, target='_blank') #{friend.fullName}
-                input.friend-select-checkbox(type='checkbox' id='chk-#{friend.userID}' name='checkedfriend[]')
+                input.friend-select-checkbox(type='checkbox' id='chk-#{friend.userID}', data-userId=friend.userID, name='checkedfriend[]')
                 //Send Message
                 input(type='hidden' name='friend[]' value='#{friend.userID}')
