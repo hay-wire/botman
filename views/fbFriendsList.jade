@@ -20,6 +20,9 @@ block content
         button#sendMsg.btn.btn-primary(type='button')
           i.fa.fa-envelope
           | Send
+        button#fbLogout.btn(type='button', onclick="javascript:window.location = '/bot/fb/logout'")
+          i.fa.fa-power-off
+          | Logout Facebook
 
     hr
     div.select-friends-button
