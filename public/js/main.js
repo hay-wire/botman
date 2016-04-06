@@ -42,3 +42,23 @@ $(document).ready(function() {
     })
 
 });
+
+function invertFriendsSelection() {
+    $('.friend-select-checkbox').map(function(i, chkbox){
+        $(chkbox).prop('checked', !$(chkbox).is(":checked") );
+    })
+}
+
+function selectAllFriends(){
+    $('.friend-select-checkbox').map(function(i, chkbox){
+        console.log("checked: ", $(chkbox).attr('checked') );
+        $(chkbox).prop('checked', true);
+    })
+}
+
+function unselectAllFriends(){
+    $('.friend-select-checkbox').map(function(i, chkbox){
+        console.log("checked: ", $(chkbox).attr('checked') );
+        $(chkbox).prop('checked', false);
+    })
+}

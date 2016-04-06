@@ -23,13 +23,13 @@ block content
 
     hr
     div.select-friends-button
-      button.btn.btn-primary(type='button')
+      button.btn.btn-primary(type='button', onclick='invertFriendsSelection()')
         i.fa.fa-toggle-on
         | Invert Selection
-      button.btn.btn-danger(type='button')
+      button.btn.btn-danger(type='button', onclick='unselectAllFriends()')
         i.fa.fa-user-times
         | Un-Select All
-      button.btn.btn-success(type='button')
+      button.btn.btn-success(type='button', onclick='selectAllFriends()')
         i.fa.fa-user-plus
         | Select All
 
