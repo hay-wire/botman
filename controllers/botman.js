@@ -260,7 +260,7 @@ exports.messageFriends = function(req, res){
 
 function parseMessage(msg, friend){
     var replacements = {
-        '{name}': friend.firstName,
+        '{firstname}': friend.firstName,
         '{fullname}': friend.fullName
     };
 
