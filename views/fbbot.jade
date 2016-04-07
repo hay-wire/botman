@@ -7,24 +7,27 @@ block content
   form.form-horizontal(method='POST')
     input(type='hidden', name='_csrf', value=_csrf)
     .form-group
-      label(class='col-sm-2 control-label', for='fbusername') Email or Username
+      label(class='col-sm-2 control-label', for='fbusername') Facebook Username
       .col-sm-8
         input.form-control(type='text', name='fbusername', id='fbusername', required=true)
     .form-group
-      label(class='col-sm-2 control-label', for='fbpass') Password
+      label(class='col-sm-2 control-label', for='fbpass') Facebook Password
       .col-sm-8
         input.form-control(type='password', name='fbpass', id='fbpass', required=true)
     .form-group
       .col-sm-offset-2.col-sm-8
         button.btn.btn-primary(type='submit')
-          i.fa.fa-envelope
-          | Send
+          i.fa.fa-power-off
+          | Facebook Login
 
+  hr
+  h5 Why Ask For Facebook Username & Password?
+  p Short answer, it is not possible to send messages from facebook from your account otherwise.
+  p
+    | Long answer: Facebook took away its messaging API since v2.4 about a year ago in order to stop people abusing
+    | and spamming others. So we came up with a workaround. And to do our magic mimic,
+    | we need your account access.
 
-  h5 Successful Messages were sent to:
-
-  pre.successMsgs
-    #{successMsgs}
-
-  pre.failedMsgs
-    #{failedMsgs}
+  p BotMan&nbsp;
+    b does not
+    | &nbsp;record your facebook username or password anywhere in any form. So stay happy, you're safe. :)
