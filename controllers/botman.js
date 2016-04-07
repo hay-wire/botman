@@ -31,7 +31,7 @@ exports.fbLogout = function(req, res){
 };
 
 exports.fbLogin = function(req, res){
-    if(!_.isEmpty(req.session) && !_.isEmpty(req.session.fb) && _.isEmpty(req.session.fb.api)){
+    if(!_.isEmpty(req.session) && !_.isEmpty(req.session.fb) && !_.isEmpty(req.session.fb.api)){
         console.log("already loggedin user..");
         res.redirect('/bot/fb/friends');
         return;
