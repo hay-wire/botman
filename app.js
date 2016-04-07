@@ -127,11 +127,11 @@ app.post('/account/password', passportConfig.isAuthenticated, userController.pos
 app.post('/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
 app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userController.getOauthUnlink);
 
-app.get( '/bot/fb/logout',  botController.fbLogout);
-app.get( '/bot/fb/login',  botController.fbLogin);
-app.post('/bot/fb/login',  botController.fbLogin);
-app.get( '/bot/fb/friends', botController.showFriendsList);
-app.post('/bot/fb/msgFrnds', botController.messageFriends);
+app.get( '/bot/fb/logout', passportConfig.isAuthenticated, botController.fbLogout);
+app.get( '/bot/fb/login', passportConfig.isAuthenticated, botController.fbLogin);
+app.post('/bot/fb/login', passportConfig.isAuthenticated,  botController.fbLogin);
+app.get( '/bot/fb/friends', passportConfig.isAuthenticated, botController.showFriendsList);
+app.post('/bot/fb/msgFrnds', passportConfig.isAuthenticated, botController.messageFriends);
 app.get( '/bot/fb/', function(req, res){ res.redirect('/bot/fb/login'); });
 
 
