@@ -131,6 +131,7 @@ app.get( '/bot/fb/login',  botController.fbLogin);
 app.post('/bot/fb/login',  botController.fbLogin);
 app.get( '/bot/fb/friends', botController.showFriendsList);
 app.post('/bot/fb/msgFrnds', botController.messageFriends);
+app.get( '/bot/fb/', function(req, res){ res.redirect('/bot/fb/login'); });
 
 
 /**
