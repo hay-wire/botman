@@ -7,3 +7,9 @@ exports.index = function(req, res) {
     title: 'Home'
   });
 };
+
+exports.privacyPolicy = function(req, res){
+  res.render('privacypolicy', {
+    title: 'Privacy Policy'
+  });
+};
