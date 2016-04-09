@@ -77,7 +77,7 @@ MessageLogSchema.statics.findScheduledMessages = function(fromTimestamp, toTimes
  */
 
 MessageLogSchema.statics.toObjectId = function(objectIds){
-  if(typeof objectIds !== 'object'){
+  if(!objectIds.map){
     return new ObjectId(objectIds);
   }
 
@@ -88,20 +88,20 @@ MessageLogSchema.statics.toObjectId = function(objectIds){
 
 MessageLogSchema.statics.logMessageResult = function(logObj){
   return this.update({
-    _id: ObjectId(logObj.messageId),
+    _id: logObj.messageId,
     sendToList: {
       $elemMatch: {
         receiverId: logObj.receiverId
       }
     }
   }, {
-    "sendToList.$.status": logObj.status,
-    $push: {
-      "sendToList.$.deliveryLog.message": logObj.statusMsg
-
+    $set: {
+      "sendToList.$.status": logObj.status,
+      $push: {
+        "sendToList.$.deliveryLog.message": logObj.msg
+      }
     }
   }).exec(function(err, result){
-    console.log("logMessageResult: ", logObj );
     console.log("logMessageResult:", err, result);
   })
 

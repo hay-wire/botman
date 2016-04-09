@@ -34,9 +34,6 @@ exports.loadSession = function(apiStr){
 exports.sendMessage = function(api, msg, friendId){
 
     console.log("sending message to: ", typeof friendId, friendId);
-    api.setOptions({
-        logLevel: 'silly'
-    });
 
     var sendMsgPromise = new Promise(function(resolve, reject){
 
@@ -45,7 +42,7 @@ exports.sendMessage = function(api, msg, friendId){
             //console.log("sendMessage returned: ", err, result);
             if(err){
                 console.log("error sending msg to", friendId, err);
-                return resolve({
+                resolve({
                     userID: friendId,
                     success: false,
                     msg: err.message
@@ -53,7 +50,7 @@ exports.sendMessage = function(api, msg, friendId){
             }
             else {
                 console.log("success sending msg to", friendId, result);
-                return resolve({
+                resolve({
                     userID: friendId,
                     success: true,
                     msg: "success sending message"
@@ -62,11 +59,6 @@ exports.sendMessage = function(api, msg, friendId){
         });
     });
     console.log("inner sendMsgPromise instance of Promise? ", sendMsgPromise instanceof Promise);
-    sendMsgPromise.then(function(result){
-        console.log("sendmessage.then: ", result);
-        return result;
-    });
-
     return sendMsgPromise;
 
 };

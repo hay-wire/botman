@@ -38,7 +38,7 @@ var sendMessages = function(fromTimestamp, toTimestamp){
 
                 var fbDataPromise = null;
 
-                if(fbSessionAPIBag[messageLog.senderFBId]){
+                if(fbSessionAPIBag[messageLog.senderFBId]) {
                     // we have cached this session id
                     console.log("using cached session api");
                     api = fbSessionAPIBag[messageLog.senderFBId];
@@ -60,60 +60,62 @@ var sendMessages = function(fromTimestamp, toTimestamp){
                             }
                         });
                 }
+                messageLogsPromises.push(fbDataPromise)
+            });
+            return messageLogsPromises;
+        })
+        .then(function(messageLogPromises){
+            return Promise.all(messageLogPromises)
+                .then(function(messageLogs){
 
-                fbDataPromise.then(function(fbData){
-                    var api = fbData.api;
-                    var messageLog = fbData.messageLog;
-                    console.log("sending messages count: ", messageLog.sendToList.length );
                     var sendMessagePromises = [];
-                    messageLog.sendToList.map(function(sendTo){
-                        console.log("sending message to: ", sendTo.receiverId);
-                        var sendMsgPromise = FBUtils.sendMessage(api, sendTo.messageText, sendTo.receiverId)
-                            .then(function(msgResult){
-                                /*
-                                 userID: friend.userID,
-                                 firstName: friend.firstName,
-                                 success: true,
-                                 err: null
-                                 */
-                                console.log("result of send message: ", msgResult);
-                                FBMessageModel.logMessageResult({
-                                    messageId: messageLog._id,
-                                    receiverId: sendTo.receiverId,
-                                    status: msgResult.success ? 2 : 3, // 2 for success, 3 for failure
-                                    statusMsg: msgResult.msg
+
+                    messageLogs.map(function(messageLogObj){
+                        var api = messageLogObj.api;
+                        var messageLog = messageLogObj.messageLog;
+                        console.log("sending messages count: ", messageLog.sendToList.length );
+                        messageLog.sendToList.map(function(sendTo){
+                            console.log("sending message to: ", sendTo.receiverId);
+                            var sendMsgPromise = FBUtils.sendMessage(api, sendTo.messageText, sendTo.receiverId)
+                                .then(function(msgResult){
+                                    /*
+                                     userID: friend.userID,
+                                     firstName: friend.firstName,
+                                     success: true,
+                                     err: null
+                                     */
+                                    console.log("result of send message: ", msgResult);
+                                    FBMessageModel.logMessageResult({
+                                            messageLog: messageLog,
+                                            messageId: messageLog._id,
+                                            receiverId: sendTo.receiverId,
+                                            status: msgResult.success ? 2 : 3, // 2 for success, 3 for failure
+                                            statusMsg: msgResult.msg
+                                        })
+                                        .then(function(){
+                                            return msgResult;
+                                        });
                                 });
-                                return msgResult;
-                            });
-                        console.log("sendMsgPromise instance of promise? ", sendMsgPromise instanceof Promise);
-                        sendMessagePromises.push(sendMsgPromise);
-                        return sendMsgPromise;
+                            sendMessagePromises.push(sendMsgPromise);
+                            return sendMsgPromise;
+                        });
+
                     });
 
                     console.log("running messages.all on # ", sendMessagePromises.length);
                     return Promise
                         .all(sendMessagePromises)
                         .then(function(results){
-                            console.log("completed all messages for ", messageLog.senderFBId, results.length);
+                            console.log("completed all messages for ", results.length);
                             return results;
                         })
-
-                });
-
-                messageLogsPromises.push(fbDataPromise);
-            });
-            return messageLogsPromises;
-
+                })
         })
-        .then(function(messageLogsPromises){
-            return Promise
-                .all(messageLogsPromises)
-                .then(function(result){
-                    console.log("ran through all the message logs: ", result.length);
-                })
-                .catch(function(err){
-                    console.log("mega fail!! ", err.stack, err)
-                })
+        .then(function(messageLogsPromiseResults){
+            console.log("ran through all the message logs: ", messageLogsPromiseResults.length)
+        })
+        .catch(function(err){
+            console.log("mega fail!! ", err.stack, err)
         })
 
 };
