@@ -20,6 +20,10 @@ block content
         button#sendMsg.btn.btn-primary(type='button')
           i.fa.fa-envelope
           | Send
+        img#loadingBtn(style="display: none; margin-left: 10px", src='/images/spinner.gif')
+        //button#loadingBtn.btn.btn-info(type='button', style="display: none; margin-left: 10px")
+        //  i.fa.fa-cog
+        //  | Processing..
         button#fbLogout.btn(type='button', onclick="javascript:window.location = '/bot/fb/logout'")
           i.fa.fa-power-off
           | Logout Facebook

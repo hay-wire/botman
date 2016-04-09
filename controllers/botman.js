@@ -177,11 +177,19 @@ exports.messageFriends = function(req, res){
             messageSendingPromise
                 .then(function(results){
                     console.log("success sending msgs", results);
-                    renderFriendsListPage(res,  req.session.fb.username, friendsList, req.body.selectedFriendsList);
+                    res.json({
+                        status: 'success',
+                        message: 'Successfully Queued'
+                    });
+                    //renderFriendsListPage(res,  req.session.fb.username, friendsList, req.body.selectedFriendsList);
                 })
                 .catch(function(err){
                     console.log("error sending some message", err);
-                    renderFriendsListPage(res,  req.session.fb.username, friendsList, req.body.selectedFriendsList);
+                    res.status(500).json({
+                        status: 'error',
+                        message: err.message
+                    });
+                    //renderFriendsListPage(res,  req.session.fb.username, friendsList, req.body.selectedFriendsList);
                 })
 
         })

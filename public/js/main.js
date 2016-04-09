@@ -16,6 +16,18 @@ $(document).ready(function() {
         var msg = $('#fbmsg').val();
         console.log("_csrf: ", _csrf);
 
+        if(msg && msg.trim) msg = msg.trim();
+
+        if(!msg || msg.length < 1){
+            $('#fbmsg').notify("Where's the message honey?", {className: "error", position: "bottom center", arrowShow: false});
+            return false;
+        }
+
+        if(userIds.length < 1) {
+            $('#fbmsg').notify("Ummm.. shouldn't you select atleast 1 friend?", {className: "error", position: "bottom center", arrowShow: false});
+            return false;
+        }
+
         var data = {
             selectedFriendsList: userIds,
             message: msg,
@@ -23,6 +35,9 @@ $(document).ready(function() {
         };
 
         console.log("sending msg to ", userIds, JSON.stringify(data));
+        $("#sendMsg").prop('disabled', true);
+        $("#loadingBtn").show();
+
         $.ajax({
                 url: "/bot/fb/msgFrnds",
                 method: "POST",
@@ -31,10 +46,19 @@ $(document).ready(function() {
                 data: JSON.stringify(data)
             })
             .done(function(done) {
+                $("#sendMsg").prop('disabled', false);
+                $("#loadingBtn").hide();
+
                 console.log( "fb msg frnds gave us:", done );
+                $('.navbar-fixed-top').notify("Awesome! Your messages would soon start delivering. :)",  {className: "success", clickToHide: true, autoHide: false, position: "bottom right", arrowShow: false});
             })
             .error(function(err){
+                $("#sendMsg").prop('disabled', false);
+                $("#loadingBtn").hide();
+
                 console.error("error fb msg frnds:", err);
+                var s = err.message ? " ("+err.message+")" : '';
+                $('.navbar-fixed-top').notify("O.o You broke me master"+s+". Try again?", {className: "error", clickToHide: true, autoHide: false, position: "bottom right", arrowShow: false});
             });
 
 
@@ -44,9 +68,13 @@ $(document).ready(function() {
 });
 
 function invertFriendsSelection() {
+    var count = 0;
     $('.friend-select-checkbox').map(function(i, chkbox){
         $(chkbox).prop('checked', !$(chkbox).is(":checked") );
+        count += !$(chkbox).is(":checked") ? 1 : 0;
     })
+
+
 }
 
 function selectAllFriends(){
