@@ -1,0 +1,136 @@
+var bcrypt = require('bcrypt-nodejs');
+var crypto = require('crypto');
+var moment = require('moment');
+var mongoose = require('mongoose');
+mongoose.set('debug', true);
+var ObjectId = ObjectId = mongoose.Schema.Types.ObjectId;
+
+/**
+ *  MessagesLog
+ *  {
+ *   message: 'hello world',
+ *   sender: xxxxx,
+ *   sentToCount: 7,
+ *   sentOn: Timestamp
+ *  }
+ *
+ * DeliveryLog
+ * {
+ *    reciever: xxxx,
+ *    sender: yyyyy,
+ *    sentOn: xxxxx,
+ *    status: pending/sent/failed,
+ *    messageId:
+ * }
+ */
+
+var DeliveryAttemptsSchema = new mongoose.Schema({
+  timestamp: Date,
+  message: String
+});
+
+var SendToSchema = new mongoose.Schema({
+  receiverId: String,
+  status: Number,   // status 0: pending, 1 processing, 2 success, 3 error
+  scheduledFor: { type: Date, default: Date.now },
+  messageText: String,
+  deliveryAttempts: { type: [DeliveryAttemptsSchema], required: false }
+});
+
+
+var MessageLogSchema = new mongoose.Schema({
+  sender: ObjectId,
+  senderFBId: String,
+  messageTemplate: String,
+  sentToCount: Number,
+  fbSessionApi: String,
+  requestReceivedAt: { type: Date, default: Date.now },
+  sendToList: [ SendToSchema ]
+}, { timestamps: true });
+
+
+MessageLogSchema.statics.findScheduledMessages = function(fromTimestamp, toTimestamp){
+  console.log("Finding Scheduled Messages for: ", fromTimestamp,toTimestamp);
+  console.log(this.find);
+  return this.find({
+    sendToList: {
+      $elemMatch: {
+        status: { $lt: 1},
+        scheduledFor: {
+          $gte: fromTimestamp,
+          $lt: toTimestamp
+        }
+      }
+    }
+  })
+    .exec()
+    .then(function(res){
+      console.log("result: ", res.length);
+      return res;
+    })
+};
+
+/**
+ *
+ * @param objectIds
+ * @returns mongo ObjectId or Array of ObjectIds
+ */
+
+MessageLogSchema.statics.toObjectId = function(objectIds){
+  if(typeof objectIds !== 'object'){
+    return new ObjectId(objectIds);
+  }
+
+  return objectIds.map(function(obId){
+    return new ObjectId(obId);
+  });
+};
+
+MessageLogSchema.statics.logMessageResult = function(logObj){
+  return this.update({
+    _id: ObjectId(logObj.messageId),
+    sendToList: {
+      $elemMatch: {
+        receiverId: logObj.receiverId
+      }
+    }
+  }, {
+    "sendToList.$.status": logObj.status,
+    $push: {
+      "sendToList.$.deliveryLog.message": logObj.statusMsg
+
+    }
+  }).exec(function(err, result){
+    console.log("logMessageResult: ", logObj );
+    console.log("logMessageResult:", err, result);
+  })
+
+};
+
+/**
+ *
+ * @param objectIdsArr
+ * @param fromTimestamp
+ * @param toTimestamp
+ * @returns {Array|{index: number, input: string}|Promise|any}
+ */
+MessageLogSchema.statics.lockMessages = function(objectIdsArr, fromTimestamp, toTimestamp){
+
+  return this.update({
+    sendToList: {
+      $elemMatch: {
+        status: { $lt: 1},
+        scheduledFor: {
+          $gte: (new Date(fromTimestamp)).getTime(),
+          $lt: (new Date(toTimestamp)).getTime()
+        }
+      }
+    }
+  }, {
+    "sendToList.$.status": 1
+  }).exec()
+};
+
+var MessageLog = mongoose.model('MessageLog', MessageLogSchema);
+
+module.exports = MessageLog;

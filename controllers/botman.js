@@ -5,8 +5,7 @@
 var fblogin = require('facebook-chat-api');
 var _ = require('lodash');
 var debug = require('debug');
-//var Promise = require('bluebird');
-var apisBag = {};
+var FBMsgSender = require('./../components/FBMesseger');
 
 
 exports.fbLogout = function(req, res){
@@ -141,30 +140,6 @@ exports.messageFriends = function(req, res){
 
     var fbFrndListPromise = null;
 
-    //if(_.isEmpty(req.session.fb.friendList)){
-    //    //console.log("no friendlist found");
-    //    //res.redirect("/bot/fb/friends?err=no_frnd_selected");
-    //    //renderLoginPage(res, req.body, null, null, new Error('BOTMAN_NO_FRIEND_SELECTED_FOR_MSG'));
-    //
-    //    fbFrndListPromise = new Promise(function(resolve, reject){
-    //        api.getFriendsList(function(ferr, friendsList) {
-    //            if (ferr) {
-    //                console.log("error getting friends list: ", ferr);
-    //                renderFriendsListPage(res, req.session.fb.username, friendsList, []);
-    //                reject([]);
-    //                return;
-    //            }
-    //
-    //            //var sendMessage = Promise.promisify(api.sendMessage);
-    //
-    //            console.log("great got friends list: ", friendsList.length);
-    //            resolve(friendsList);
-    //        });
-    //    })
-    //}
-    //else {
-    //    fbFrndListPromise = Promise.resolve(req.session.fb.friendList);
-    //}
     var friendListIndex = req.session.fb.friendListIndex;
     var api = null;
 
@@ -188,57 +163,18 @@ exports.messageFriends = function(req, res){
         .then(function(friendsList){
 
             console.log("great got friends list: ", friendsList.length);
-            var failedMsgs = [];
-            var successMsgs = [];
-            var msgPromises = [];
 
-            friendsList.map(function(friendUserId){
+            var messageSendingPromise = Promise;
+            if(_.isEmpty(req.body.scheduleMessages)) {
+                console.log("sending messages now");
+                messageSendingPromise = FBMsgSender.sendMessagesNow(req.user.id, api, req.body.message, friendsList, friendListIndex);
+            }
+            else {
+                console.log("scheduling messages");
+                messageSendingPromise = FBMsgSender.scheduleMessages(req.user.id, api, req.body.message, friendsList, friendListIndex);
+            }
 
-                if(_.isEmpty(friendListIndex[friendUserId])){
-                    return;
-                }
-                var friend = friendListIndex[friendUserId];
-
-                var msg = "Hi "+friend.firstName+"! I'm a testing bot who your friend summoned. Find me on http://botman.prashantdwivedi.co :)";
-                if(req.body.message) msg = parseMessage(req.body.message, friend);
-
-                if(friend.userID) {
-                    console.log("sending msg to: ", friend.userID);
-                    var pr = new Promise(function(resolve, reject){
-                        api.sendMessage(msg, friend.userID, function(err, result){
-                            if(err){
-                                console.log("error sending msg to", friend.userID, err);
-                                failedMsgs.push({
-                                    userID: friend.userID,
-                                    firstName: friend.firstName,
-                                    err: err
-                                });
-                            }
-                            else {
-                                console.log("success sending msg to", friend.userID, result);
-                                successMsgs.push({
-                                    userID: friend.userID,
-                                    firstName: friend.firstName,
-                                    err: null
-                                });
-                            }
-                            resolve();
-                        });
-                    });
-                    msgPromises.push(pr);
-                }
-                else {
-                    failedMsgs.push({
-                        userID: friend.userID,
-                        firstName: friend.firstName,
-                        err: new Error('BOTMAN_INVALID_FRIEND')
-                    });
-                    console.log("not sending to: ", friend);
-                }
-            });
-
-            Promise
-                .all(msgPromises)
+            messageSendingPromise
                 .then(function(results){
                     console.log("success sending msgs", results);
                     renderFriendsListPage(res,  req.session.fb.username, friendsList, req.body.selectedFriendsList);
@@ -251,25 +187,11 @@ exports.messageFriends = function(req, res){
         })
         .catch(function(err){
             console.log("Error getting friends list: ", err);
+            console.log(err.stack);
             renderFriendsListPage(res,  req.session.fb.username, req.session.fb.friendList, req.body.selectedFriendsList);
         });
 
 };
-
-
-
-function parseMessage(msg, friend){
-    var replacements = {
-        '{firstname}': friend.firstName,
-        '{fullname}': friend.fullName
-    };
-
-    for( var key in replacements){
-        msg = msg.replace(new RegExp(key, 'g'), replacements[key]);
-    }
-
-    return msg;
-}
 
 
 function renderLoginPage(res, reqBody, successMsgs, failedMsgs, err){
