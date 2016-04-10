@@ -107,7 +107,7 @@ exports.sendMessagesNow = function(userId, api, messageTemplate, selectedFriends
         messageModel.sendToList.push({
             receiverId: friendUserId,
             status: 0,
-            scheduledFor: moment().add(i++, 'minutes'), // send one message per minute
+            scheduledFor: moment().add(i++, ' minutes'), // send one message per minute
             messageText: parseMessage(messageTemplate, friend),
             fbSessionApi: appState,
             deliveryAttempts: []
