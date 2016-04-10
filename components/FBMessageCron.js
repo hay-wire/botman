@@ -22,13 +22,16 @@ var moment = require('moment');
 var FBMessageModel = require('./../models/FBMessageLog');
 var mongoose = require('mongoose');
 var FBUtils = require('./FBUtils');
-require('dotenv').load({ path: './../.env' });
+require('dotenv').load({ path: __dirname+'/../.env' });
 
-var fromTimestamp = moment();
-var toTimestamp = moment().add('1 minutes');
+var fromTimestamp = (new Date()).getTime();
+var toTimestamp = (new Date(fromTimestamp)).getTime() + 60000;
+
+if(process.argv && process.argv.length  >= 3){
+    fromTimestamp = parseInt(process.argv[2]);
+}
 
 if(process.argv && process.argv.length  >= 4){
-    fromTimestamp = parseInt(process.argv[2]);
     toTimestamp = parseInt(process.argv[3]);
 }
 

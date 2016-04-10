@@ -96,6 +96,7 @@ exports.sendMessagesNow = function(userId, api, messageTemplate, selectedFriends
     });
 
     var i = 2;
+    var nowTimestamp = (new Date()).getTime();
     selectedFriendsList.map(function(friendUserId) {
         console.log("adding friend to list: ", friendUserId);
         if(_.isEmpty(friendsList[friendUserId])){
@@ -107,7 +108,7 @@ exports.sendMessagesNow = function(userId, api, messageTemplate, selectedFriends
         messageModel.sendToList.push({
             receiverId: friendUserId,
             status: 0,
-            scheduledFor: moment().add(i++ + ' minutes'), // send one message per minute
+            scheduledFor: nowTimestamp + (60000*i++), // send one message per minute
             messageText: parseMessage(messageTemplate, friend),
             fbSessionApi: appState,
             deliveryAttempts: []
