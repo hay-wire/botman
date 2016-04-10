@@ -98,7 +98,10 @@ MessageLogSchema.statics.logMessageResult = function(logObj){
     $set: {
       "sendToList.$.status": logObj.status,
       $push: {
-        "sendToList.$.deliveryLog.message": logObj.msg
+        "sendToList.$.deliveryLog": {
+          message: logObj.msg,
+          timestamp: (new Date()).getTime()
+        }
       }
     }
   }).exec(function(err, result){
