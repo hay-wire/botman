@@ -1,3 +1,5 @@
+process.env.TZ = 'UTC';
+
 /**
  * Module dependencies.
  */
