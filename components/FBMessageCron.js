@@ -2,11 +2,35 @@
  * Created by haywire on 08/04/16.
  */
 
+
+/**
+ *
+ * @arg first - {from timestamp}
+ * @arg second - {to timestamp}
+ *
+ * default behaviour: runs from current minute to next minute.
+ *
+ * example of running:
+ * node FBMessageCron.js 1460191090375 1460359542984 #this will run send messages scheduled from 1460191090375 to 1460359542984
+ * or simply
+ * node FBMessageCron.js # this will run from current timestamp to next minute timestamp.
+ *
+ */
+process.env.TZ = 'UTC';
+
 var moment = require('moment');
 var FBMessageModel = require('./../models/FBMessageLog');
 var mongoose = require('mongoose');
 var FBUtils = require('./FBUtils');
 require('dotenv').load({ path: './../.env' });
+
+var fromTimestamp = moment();
+var toTimestamp = moment().add('1 minutes');
+
+if(process.argv && process.argv.length  >= 4){
+    fromTimestamp = parseInt(process.argv[2]);
+    toTimestamp = parseInt(process.argv[3]);
+}
 
 (function connectDB(){
     console.log('connecting to mongo..');
@@ -113,26 +137,35 @@ var sendMessages = function(fromTimestamp, toTimestamp){
         })
         .then(function(messageLogsPromiseResults){
             console.log("ran through all the message logs: ", messageLogsPromiseResults.length)
-        })
-        .catch(function(err){
-            console.log("mega fail!! ", err.stack, err)
+            return true;
         })
 
 };
 
+console.log("running for time: ", fromTimestamp, toTimestamp);
+console.log("running for time: ", (new Date(fromTimestamp)).toUTCString(), (new Date(toTimestamp)).toUTCString() );
+
 
 mongoose.connection.on('connected', function () {
-    sendMessages(1460191090375, 1460216290375)
+    //sendMessages(1460191090375, 1460359542984)
+    sendMessages(fromTimestamp, toTimestamp)
         .then(function(d){
             console.log("sent", d);
+            return 1;
         })
         .then(function(){
-            //process.exit()
+            console.log("completed for for time: ", (new Date(fromTimestamp)).toUTCString(), (new Date(toTimestamp)).toUTCString() )
             console.log("ok");
+            process.exit();
+        })
+        .catch(function(err){
+            console.log("mega mega fail!! ", err);
+            if(err.message == 'NO_MESSAGES_SCHEDULED'){
+                console.log("ok");
+                process.exit();
+            }
+            console.error(err.stack);
+            console.log("not ok");
+            process.exit(-1);
         })
 });
-
-
-(function me(){
-    setTimeout(function(){ me() }, 1000);
-})()
