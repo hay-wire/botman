@@ -63,13 +63,14 @@ MessageLogSchema.statics.findScheduledMessages = function(fromTimestamp, toTimes
           //senderFBId: 1,
           fbSessionApi: 1,
           sendToList: {
-          $elemMatch: {
-            'scheduledFor': {
-              $gte: fromTimestamp, $lt: toTimestamp
+            $elemMatch: {
+              'scheduledFor': {
+                $gte: fromTimestamp, $lt: toTimestamp
+              }
             }
           }
         }
-      })
+  )
     .exec()
     .then(function(res){
       console.log("result: ", res.length);
