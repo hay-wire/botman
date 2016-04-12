@@ -39,13 +39,13 @@ var SendToSchema = new mongoose.Schema({
 
 
 var MessageLogSchema = new mongoose.Schema({
-  sender: ObjectId,
+  sender: { type: ObjectId, index: true },
   senderFBId: String,
   messageTemplate: String,
   sentToCount: Number,
   fbSessionApi: String,
   requestReceivedAt: { type: Date, default: Date.now },
-  sendToList: [ SendToSchema ]
+  sendToList: { type: [ SendToSchema ], index: true}
 }, { timestamps: true });
 
 
@@ -53,16 +53,23 @@ MessageLogSchema.statics.findScheduledMessages = function(fromTimestamp, toTimes
   console.log("Finding Scheduled Messages for: ", fromTimestamp,toTimestamp);
   console.log(this.find);
   return this.find({
-    sendToList: {
-      $elemMatch: {
-        status: { $lt: 1},
-        scheduledFor: {
-          $gte: fromTimestamp,
-          $lt: toTimestamp
+          'sendToList.status': {$lt: 1},
+          'sendToList.scheduledFor': {
+            $gte: fromTimestamp, $lt: toTimestamp
+          }
+        },
+        {
+          //sender: 1,
+          //senderFBId: 1,
+          fbSessionApi: 1,
+          sendToList: {
+          $elemMatch: {
+            'scheduledFor': {
+              $gte: fromTimestamp, $lt: toTimestamp
+            }
+          }
         }
-      }
-    }
-  })
+      })
     .exec()
     .then(function(res){
       console.log("result: ", res.length);

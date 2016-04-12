@@ -42,12 +42,20 @@ exports.fbLogin = function(req, res){
     }
     else {
         console.log("logging in user..");
-        fblogin({email: req.body.fbusername, password: req.body.fbpass, }, function (err, api) {
+        fblogin({email: req.body.fbusername, password: req.body.fbpass }, function (err, api) {
             if (err) {
                 console.log("Oops! error fb login: ", err);
-                renderLoginPage(res, req.body);
-                reject(err);
-                return;
+                var failureMsg = 'Oops! Some error occured while accessing Facebook account!';
+                switch(err.code){
+                    case 'ETIMEDOUT': failureMsg = 'Oops! Looks like your internet is not working. Please try again.';
+                        break;
+                    case 'ENOTFOUND': failureMsg = 'Oops! Looks like your internet is not working. Please try again.';
+                        break;
+                    default: if(err.message ) failureMsg = err.message;
+                }
+                //renderLoginPage(res, req.body, null, failureMsg, err);
+                req.flash('errors', { msg: failureMsg });
+                return res.redirect('/bot/fb/login?err=access_issue');
             }
             api.setOptions({
                 forceLogin: true
@@ -96,7 +104,16 @@ exports.showFriendsList = function(req, res) {
             }
         })
     })
-
+    .catch(function(err){
+        console.log("error getting friends list: ", err);
+        var failureMsg = 'Oops! Some error occured while accessing Facebook account!';
+        switch(err.code){
+            case 'ETIMEDOUT': failureMsg = 'Looks like your internet is not working. Please try again.';
+                break;
+            default: if(err.message ) failureMsg = err.message;
+        }
+        renderLoginPage(res, req.body, null, failureMsg, err);
+    })
     .then(function(api){
         console.log("getting friend list..");
         api.getFriendsList(function (ferr, friendsList) {
@@ -117,6 +134,7 @@ exports.showFriendsList = function(req, res) {
 
         });
     })
+
 
 };
 
