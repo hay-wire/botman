@@ -46,10 +46,16 @@ exports.fbLogin = function(req, res){
             if (err) {
                 console.log("Oops! error fb login: ", err);
                 var failureMsg = 'Oops! Some error occured while accessing Facebook account!';
-                switch(err.code){
-                    case 'ETIMEDOUT': failureMsg = 'Oops! Looks like your internet is not working. Please try again.';
+                var msgTest = err.code || err.message || err.error || err;
+                switch(msgTest){
+                    case 'ETIMEDOUT':
+                        failureMsg = 'Oops! Looks like your internet is not working. Please try again.';
                         break;
-                    case 'ENOTFOUND': failureMsg = 'Oops! Looks like your internet is not working. Please try again.';
+                    case 'ENOTFOUND':
+                        failureMsg = 'Oops! Looks like your internet is not working. Please try again.';
+                        break;
+                    case 'Wrong username/password.':
+                        failureMsg = 'Oh, Please recheck your fb username/password.';
                         break;
                     default: if(err.message ) failureMsg = err.message;
                 }
