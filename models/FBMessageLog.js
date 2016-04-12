@@ -31,8 +31,8 @@ var DeliveryAttemptsSchema = new mongoose.Schema({
 
 var SendToSchema = new mongoose.Schema({
   receiverId: String,
-  status: Number,   // status 0: pending, 1 processing, 2 success, 3 error
-  scheduledFor: { type: Date, default: Date.now },
+  status: { type: Number, index: true },   // status 0: pending, 1 processing, 2 success, 3 error
+  scheduledFor: { type: Date, default: Date.now, index: true },
   messageText: String,
   deliveryAttempts: { type: [DeliveryAttemptsSchema], required: false }
 });
@@ -45,7 +45,7 @@ var MessageLogSchema = new mongoose.Schema({
   sentToCount: Number,
   fbSessionApi: String,
   requestReceivedAt: { type: Date, default: Date.now },
-  sendToList: { type: [ SendToSchema ], index: true}
+  sendToList: [ SendToSchema ]
 }, { timestamps: true });
 
 
