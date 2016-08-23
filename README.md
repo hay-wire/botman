@@ -1,10 +1,12 @@
 #BotMan
 
+Checkout this project live at [botman.in](https://www.botman.in/?UTM_SOURCE=github-project).
+
 ## BotMan | The Exotic Bots Collection
 
-This is a collection of great bots who assist you in daily works, sort of digital companions. For now, I'm starting with 
-Loki - the facebook messaging bot who will send your messages to all (or the ones you select) the people in your facebook
- friends' list. Hope to add more soon.
+This project is intended to be a collection of useful bots who assist you in daily works, sort of digital companions. 
+For now, I'm starting with Loki - the facebook messaging bot who will send your messages to all (or the ones you select) 
+the people in your facebook friends' list. Hope to add more soon.
  
 ## Setting up the project
 
@@ -24,6 +26,8 @@ Follow the below steps to install and run Botman on your system.
 1. Add a cron to send messages using `crontab -e` command. Configure it to run every minute:
         `* * * * * /usr/local/bin/node /var/www/botman.in/components/FBMessageCron.js >> /var/logs/FBMessageCron.log`
 1. Done.
+
+Don't want to run through all these steps? I have hosted it for you on [botman.in](https://www.botman.in/?UTM_SOURCE=github-project).
     
 ## Using Loki - The Facebook Messaging Bot
 

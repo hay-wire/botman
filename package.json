@@ -1,12 +1,13 @@
 {
-  "name": "hackathon-starter",
-  "version": "3.5.0",
+  "name": "botman",
+  "version": "0.2.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sahat/hackathon-starter.git"
+    "url": "https://github.com/hay-wire/botman.git"
   },
   "scripts": {
     "start": "node app.js",
+    "startdev": "NODE_ENV=development.local node app.js",
     "test": "mocha --reporter spec --timeout 5000"
   },
   "dependencies": {

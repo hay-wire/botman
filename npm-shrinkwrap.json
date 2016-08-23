@@ -1,6 +1,6 @@
 {
-  "name": "hackathon-starter",
-  "version": "3.5.0",
+  "name": "botman",
+  "version": "0.2.1",
   "dependencies": {
     "abab": {
       "version": "1.0.3",
