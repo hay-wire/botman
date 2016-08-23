@@ -11,6 +11,7 @@ the people in your facebook friends' list. Hope to add more soon.
 ## Setting up the project
 
 Follow the below steps to install and run Botman on your system.
+
 1. Install the following components on your system:
     * Node.js version >= v4.3
     * npm version 2.x
